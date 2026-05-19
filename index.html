@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apartment Sales Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #366092 0%, #4a7ab8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            padding: 50px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #366092;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        a {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #366092;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #366092;
+        }
+        
+        a:hover {
+            background: white;
+            color: #366092;
+        }
+        
+        a.secondary {
+            background: white;
+            color: #366092;
+        }
+        
+        a.secondary:hover {
+            background: #f0f0f0;
+        }
+        
+        .features {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .features h3 {
+            color: #366092;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .features ul {
+            list-style: none;
+        }
+        
+        .features li {
+            padding: 8px 0;
+            color: #333;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .features li:last-child {
+            border-bottom: none;
+        }
+        
+        .features li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .info {
+            background: #e7f3ff;
+            border-left: 4px solid #366092;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #0c5460;
+            text-align: left;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .logo {
+                font-size: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🏢</div>
+        <h1>Apartment Sales Manager</h1>
+        <p class="subtitle">Manage, approve, and generate contracts for apartment sales</p>
+        
+        <div class="button-group">
+            <a href="app.html">🚀 Start Application</a>
+            <a href="SETUP_GUIDE.md" class="secondary">📖 Read Setup Guide</a>
+            <a href="PROJECT_SUMMARY.md" class="secondary">📋 Project Summary</a>
+        </div>
+        
+        <div class="features">
+            <h3>Key Features</h3>
+            <ul>
+                <li>Search buyers by name or apartment number</li>
+                <li>Approve/Reject applications with notes</li>
+                <li>Generate PDF contracts automatically</li>
+                <li>Works 100% offline on tablets</li>
+                <li>Import/Export Excel files</li>
+                <li>Track approval status</li>
+                <li>Professional PDF generation</li>
+                <li>Mobile-optimized interface</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            💡 <strong>Pro Tip:</strong> First visit must be online to cache the app. After that, works perfectly offline!
+        </div>
+    </div>
+</body>
+</html>
