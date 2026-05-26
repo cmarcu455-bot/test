@@ -570,6 +570,134 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-chip {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+        }
+
+        .stat-chip strong {
+            color: var(--primary);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .filter-row select {
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 32px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed var(--border);
+            color: #666;
+        }
+
+        .empty-state a {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .import-hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff8e6;
+            border-radius: 4px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .data-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        .data-tabs button {
+            padding: 8px 14px;
+            background: var(--light);
+            color: var(--dark);
+            border: 2px solid var(--border);
+        }
+
+        .data-tabs button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .data-tabs button:hover:not(.active) {
+            background: #e9ecef;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .table .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+            margin-right: 4px;
+        }
+
+        .edit-form-card {
+            background: #f8f9fa;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .edit-form-card h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .edit-hint {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        @media print {
+            header, nav, footer, .action-buttons, .modal { display: none !important; }
+            .section { display: block !important; box-shadow: none; }
+        }
     </style>
 </head>
 <body>
@@ -584,7 +712,8 @@
                 <button class="nav-btn active" data-section="search">🔍 Search Buyer</button>
                 <button class="nav-btn" data-section="approve">✅ Approve/Review</button>
                 <button class="nav-btn" data-section="pdf">📄 Generate PDF</button>
-                <button class="nav-btn" data-section="data">📊 Data Management</button>
+                <button class="nav-btn" data-section="edit">✏️ Edit Data</button>
+                <button class="nav-btn" data-section="data">📊 Import/Export</button>
             </nav>
         </div>
     </header>
@@ -594,10 +723,21 @@
             <!-- SEARCH SECTION -->
             <section id="search" class="section active">
                 <h2>Search Buyer or Apartment</h2>
+                <div class="stats-bar" id="searchStats"></div>
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search by buyer name or apartment number...">
-                    <button onclick="searchBuyers()">Search</button>
-                    <button class="secondary" onclick="clearSearch()">Clear</button>
+                    <input type="text" id="searchInput" placeholder="Search by buyer name or apartment number..." autocomplete="off">
+                    <button type="button" id="searchBtn">Search</button>
+                    <button type="button" class="secondary" id="clearSearchBtn">Clear</button>
+                    <button type="button" class="secondary" id="browseAllBtn">Show all</button>
+                </div>
+                <div class="filter-row">
+                    <label for="statusFilter">Filter by status:</label>
+                    <select id="statusFilter">
+                        <option value="">All statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
                 </div>
                 <div id="searchResults" class="buyer-list"></div>
             </section>
@@ -611,6 +751,7 @@
                 
                 <div class="form-section">
                     <h3>Buyer Information</h3>
+                    <p style="font-size:13px;color:#666;margin-bottom:10px;">To change name, email, or apartment, use <strong>Edit Data → Buyers</strong>.</p>
                     <div id="buyerInfo">
                         <p style="color: #999;">Select a buyer from search first</p>
                     </div>
@@ -645,9 +786,9 @@
                             <label>Notes (Why approved/rejected)</label>
                             <textarea id="approvalNotes" placeholder="Add your notes here..."></textarea>
                         </div>
-                        <div class="action-buttons">
-                            <button class="success" onclick="saveApproval()">💾 Save Approval</button>
-                            <button class="secondary" onclick="cancelApproval()">Cancel</button>
+                        <div class="action-buttons" id="approvalActionButtons">
+                            <button type="button" class="success" id="saveApprovalBtn">💾 Save Approval</button>
+                            <button type="button" class="secondary" id="cancelApprovalBtn">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -659,8 +800,9 @@
                 <div class="form-section">
                     <h3>Select Buyer</h3>
                     <div class="search-box">
-                        <input type="text" id="pdfSearchInput" placeholder="Search buyer...">
-                        <button onclick="searchForPdf()">Search</button>
+                        <input type="text" id="pdfSearchInput" placeholder="Search buyer..." autocomplete="off">
+                        <button type="button" id="pdfSearchBtn">Search</button>
+                        <button type="button" class="secondary" id="pdfShowAllBtn">Show all</button>
                     </div>
                     <div id="pdfSearchResults" class="buyer-list"></div>
                 </div>
@@ -669,31 +811,46 @@
                     <div class="form-section">
                         <h3>Contract Preview</h3>
                         <div id="contractPreview"></div>
-                        <div class="action-buttons">
-                            <button class="success" onclick="downloadPDF()">📥 Download PDF</button>
-                            <button class="secondary" onclick="closePdfPreview()">Close</button>
+                        <div class="action-buttons" id="pdfActionButtons">
+                            <button type="button" class="success" id="downloadPdfBtn">📥 Print / Save PDF</button>
+                            <button type="button" class="secondary" id="closePdfBtn">Close</button>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- EDIT DATA SECTION -->
+            <section id="edit" class="section">
+                <h2>Edit Data</h2>
+                <p class="edit-hint">Add or change apartments, buyers, options, and selections. Changes save on this device automatically — use <strong>Import/Export → Export Data</strong> to update your Excel file.</p>
+                <div class="data-tabs" id="editTabs">
+                    <button type="button" class="active" data-edit-tab="apartments">🏠 Apartments</button>
+                    <button type="button" data-edit-tab="buyers">👤 Buyers</button>
+                    <button type="button" data-edit-tab="options">🎨 Styling Options</button>
+                    <button type="button" data-edit-tab="selections">📋 Buyer Selections</button>
+                </div>
+                <div id="editPanel"></div>
+            </section>
+
             <!-- DATA MANAGEMENT SECTION -->
             <section id="data" class="section">
-                <h2>Data Management</h2>
+                <h2>Import / Export</h2>
                 
                 <div class="form-section">
                     <h3>Import/Export Excel</h3>
-                    <p style="margin-bottom: 15px; color: #666;">Upload your Excel file to import buyer and apartment data</p>
+                    <p style="margin-bottom: 15px; color: #666;">Upload your Excel file to load data, or edit in the app and <strong>Export</strong> to save back to Excel. Test file: <strong>Apartment_Sales_Test_Data.xlsx</strong>.</p>
+                    <div class="import-hint">Required sheets (exact names): Apartments, Styling_Options, Buyers, Buyer_Selections</div>
                     
                     <div class="form-group">
-                        <label>Upload Excel File</label>
-                        <input type="file" id="excelFile" accept=".xlsx,.xls" onchange="handleExcelUpload(event)">
+                        <label>Upload Excel File (.xlsx)</label>
+                        <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
                     </div>
+                    <p id="excelFileName" style="font-size: 13px; color: #666; margin-bottom: 12px;"></p>
                     
                     <div class="action-buttons">
-                        <button class="success" onclick="importExcel()">📤 Import Data</button>
-                        <button class="warning" onclick="exportToExcel()">📥 Export Data</button>
-                        <button class="danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+                        <button type="button" class="success" id="importExcelBtn">📤 Import Data</button>
+                        <button type="button" class="warning" id="exportExcelBtn">📥 Export Data</button>
+                        <button type="button" class="danger" id="clearDataBtn">🗑️ Clear All Data</button>
                     </div>
                 </div>
 
@@ -731,527 +888,13 @@
     </main>
 
     <footer>
-        <p>🏢 Apartment Sales Manager | Data syncs when online | Version 1.0</p>
+        <p>🏢 Apartment Sales Manager | Works offline after first load | Version 1.3</p>
         <p>Last updated: <span id="lastSync">Never</span></p>
     </footer>
 
-    <script>
-        // ===== APP STATE =====
-        let appData = {
-            apartments: [],
-            buyers: [],
-            stylingOptions: [],
-            buyerSelections: [],
-            selectedBuyer: null
-        };
+    <script src="app.js?v=1.3"></script>
 
-        let currentExcelFile = null;
-
-        // ===== INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', () => {
-            loadDataFromStorage();
-            setupEventListeners();
-            updateDataSummary();
-            updateOnlineStatus();
-            
-            // Register Service Worker for PWA
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(() => {
-                    console.log('Service Worker registration failed (offline mode available)');
-                });
-            }
-
-            // Check online status
-            window.addEventListener('online', () => updateOnlineStatus());
-            window.addEventListener('offline', () => updateOnlineStatus());
-        });
-
-        // ===== EVENT LISTENERS =====
-        function setupEventListeners() {
-            // Navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                    
-                    const section = e.target.dataset.section;
-                    e.target.classList.add('active');
-                    document.getElementById(section).classList.add('active');
-                });
-            });
-        }
-
-        // ===== STORAGE MANAGEMENT =====
-        function loadDataFromStorage() {
-            try {
-                const stored = localStorage.getItem('appData');
-                if (stored) {
-                    appData = JSON.parse(stored);
-                }
-            } catch (e) {
-                console.error('Error loading data:', e);
-            }
-        }
-
-        function saveDataToStorage() {
-            try {
-                localStorage.setItem('appData', JSON.stringify(appData));
-                updateLastSync();
-                showToast('Data saved locally', 'success');
-            } catch (e) {
-                console.error('Error saving data:', e);
-                showToast('Error saving data', 'error');
-            }
-        }
-
-        // ===== SEARCH FUNCTIONALITY =====
-        function searchBuyers() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-            
-            if (!searchTerm) {
-                showToast('Please enter a search term', 'error');
-                return;
-            }
-
-            const results = appData.buyers.filter(buyer => 
-                buyer.name.toLowerCase().includes(searchTerm) ||
-                buyer.apartment_number.includes(searchTerm)
-            );
-
-            displaySearchResults(results);
-        }
-
-        function displaySearchResults(results) {
-            const container = document.getElementById('searchResults');
-            
-            if (results.length === 0) {
-                container.innerHTML = '<div class="no-results"><p>No results found</p></div>';
-                return;
-            }
-
-            container.innerHTML = results.map(buyer => `
-                <div class="buyer-card" onclick="selectBuyerForApproval('${buyer.buyer_id}')">
-                    <h3>${buyer.name}</h3>
-                    <p><strong>Apartment:</strong> ${buyer.apartment_number}</p>
-                    <p><strong>Email:</strong> ${buyer.email}</p>
-                    <p><strong>Phone:</strong> ${buyer.phone}</p>
-                    <span class="status-badge ${buyer.approval_status.toLowerCase()}">${buyer.approval_status}</span>
-                </div>
-            `).join('');
-        }
-
-        function clearSearch() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResults').innerHTML = '';
-        }
-
-        // ===== APPROVAL WORKFLOW =====
-        function selectBuyerForApproval(buyerId) {
-            const buyer = appData.buyers.find(b => b.buyer_id === buyerId);
-            if (!buyer) return;
-
-            appData.selectedBuyer = buyer;
-            displayBuyerApprovalForm();
-
-            // Switch to approval section
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelector('[data-section="approve"]').classList.add('active');
-            document.getElementById('approve').classList.add('active');
-        }
-
-        function displayBuyerApprovalForm() {
-            const buyer = appData.selectedBuyer;
-            const apartment = appData.apartments.find(a => a.apartment_number === buyer.apartment_number);
-            const selections = appData.buyerSelections.filter(s => s.buyer_id === buyer.buyer_id);
-
-            // Buyer Info
-            document.getElementById('buyerInfo').innerHTML = `
-                <div class="summary">
-                    <div class="summary-row">
-                        <strong>Name:</strong> ${buyer.name}
-                    </div>
-                    <div class="summary-row">
-                        <strong>Email:</strong> ${buyer.email}
-                    </div>
-                    <div class="summary-row">
-                        <strong>Phone:</strong> ${buyer.phone}
-                    </div>
-                </div>
-            `;
-
-            // Apartment Info
-            if (apartment) {
-                document.getElementById('apartmentInfo').innerHTML = `
-                    <div class="summary">
-                        <div class="summary-row">
-                            <strong>Apartment:</strong> ${apartment.apartment_number}
-                        </div>
-                        <div class="summary-row">
-                            <strong>Type:</strong> ${apartment.bedroom_type} Bedroom
-                        </div>
-                        <div class="summary-row">
-                            <strong>Base Price:</strong> ${formatPrice(apartment.base_price)}
-                        </div>
-                        <div class="summary-row">
-                            <strong>Parking Spots:</strong> ${apartment.parking_spots}
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Options Review with Notes
-            let totalUpcharge = 0;
-            let optionsHtml = '<div class="summary">';
-            
-            if (selections.length === 0) {
-                optionsHtml += '<p style="color: #999;">No options selected yet</p>';
-            } else {
-                selections.forEach((sel, index) => {
-                    totalUpcharge += sel.upcharge || 0;
-                    const noteId = `option-note-${index}`;
-                    optionsHtml += `
-                        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
-                            <div class="summary-row">
-                                <span><strong>${sel.option_category}:</strong> ${sel.option_choice}</span>
-                                <span class="option-price">+${formatPrice(sel.upcharge || 0)}</span>
-                            </div>
-                            <div style="margin-top: 8px;">
-                                <label style="font-size: 12px; color: #666;">Notes for this option:</label>
-                                <textarea id="${noteId}" placeholder="E.g., Available in 2 weeks, Premium choice, Out of stock..." 
-                                    style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; font-family: inherit; resize: vertical; min-height: 50px;">${sel.option_notes || ''}</textarea>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                const totalPrice = (apartment ? apartment.base_price : 0) + totalUpcharge;
-                optionsHtml += `
-                    <div class="total-price">
-                        Total Price: ${formatPrice(totalPrice)}
-                    </div>
-                `;
-            }
-            
-            optionsHtml += '</div>';
-            document.getElementById('optionsReview').innerHTML = optionsHtml;
-
-            // Approval Form
-            document.getElementById('approvalStatus').value = buyer.approval_status || 'Pending';
-            document.getElementById('approvalNotes').value = buyer.approval_notes || '';
-            document.getElementById('approvalForm').style.display = 'block';
-            document.getElementById('syncInfo').style.display = 'block';
-        }
-
-        function saveApproval() {
-            const buyer = appData.selectedBuyer;
-            if (!buyer) return;
-
-            // Get option notes before saving
-            const selections = appData.buyerSelections.filter(s => s.buyer_id === buyer.buyer_id);
-            selections.forEach((sel, index) => {
-                const noteId = `option-note-${index}`;
-                const noteElement = document.getElementById(noteId);
-                if (noteElement) {
-                    sel.option_notes = noteElement.value;
-                }
-            });
-
-            buyer.approval_status = document.getElementById('approvalStatus').value;
-            buyer.approval_notes = document.getElementById('approvalNotes').value;
-            buyer.approval_date = new Date().toISOString().split('T')[0];
-
-            saveDataToStorage();
-            updateDataSummary();
-            showToast(`Approval saved for ${buyer.name}`, 'success');
-        }
-
-        function cancelApproval() {
-            document.getElementById('approvalStatus').value = 'Pending';
-            document.getElementById('approvalNotes').value = '';
-            appData.selectedBuyer = null;
-        }
-
-        // ===== PDF GENERATION =====
-        function searchForPdf() {
-            const searchTerm = document.getElementById('pdfSearchInput').value.toLowerCase().trim();
-            
-            if (!searchTerm) {
-                showToast('Please enter a search term', 'error');
-                return;
-            }
-
-            const results = appData.buyers.filter(buyer => 
-                buyer.name.toLowerCase().includes(searchTerm) ||
-                buyer.apartment_number.includes(searchTerm)
-            );
-
-            const container = document.getElementById('pdfSearchResults');
-            
-            if (results.length === 0) {
-                container.innerHTML = '<div class="no-results"><p>No results found</p></div>';
-                return;
-            }
-
-            container.innerHTML = results.map(buyer => `
-                <div class="buyer-card" onclick="previewPdf('${buyer.buyer_id}')">
-                    <h3>${buyer.name}</h3>
-                    <p><strong>Apartment:</strong> ${buyer.apartment_number}</p>
-                    <p><strong>Status:</strong> <span class="status-badge ${buyer.approval_status.toLowerCase()}">${buyer.approval_status}</span></p>
-                </div>
-            `).join('');
-        }
-
-        function previewPdf(buyerId) {
-            const buyer = appData.buyers.find(b => b.buyer_id === buyerId);
-            const apartment = appData.apartments.find(a => a.apartment_number === buyer.apartment_number);
-            const selections = appData.buyerSelections.filter(s => s.buyer_id === buyer.buyer_id);
-
-            let totalPrice = apartment ? apartment.base_price : 0;
-            let optionsHtml = '';
-
-            if (selections.length > 0) {
-                optionsHtml = '<h3>Selected Options:</h3><ul>';
-                selections.forEach(sel => {
-                    totalPrice += sel.upcharge || 0;
-                    optionsHtml += `<li><strong>${sel.option_category}:</strong> ${sel.option_choice} (+${formatPrice(sel.upcharge || 0)})</li>`;
-                });
-                optionsHtml += '</ul>';
-            }
-
-            const contractHtml = `
-                <div style="font-family: Arial; line-height: 1.8; color: #333;">
-                    <h2 style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px;">APARTMENT PURCHASE CONTRACT</h2>
-                    
-                    <p style="text-align: center; color: #999; font-size: 12px; margin: 20px 0;">Generated on ${new Date().toLocaleDateString()}</p>
-                    
-                    <h3>BUYER INFORMATION</h3>
-                    <p><strong>Name:</strong> ${buyer.name}</p>
-                    <p><strong>Email:</strong> ${buyer.email}</p>
-                    <p><strong>Phone:</strong> ${buyer.phone}</p>
-                    
-                    <h3>APARTMENT DETAILS</h3>
-                    <p><strong>Apartment Number:</strong> ${apartment.apartment_number}</p>
-                    <p><strong>Bedrooms:</strong> ${apartment.bedroom_type}</p>
-                    <p><strong>Parking Spots:</strong> ${apartment.parking_spots}</p>
-                    <p><strong>Base Price:</strong> ${formatPrice(apartment.base_price)}</p>
-                    
-                    ${optionsHtml}
-                    
-                    <h3 style="border-top: 2px solid #333; padding-top: 10px; margin-top: 20px;">TOTAL PRICE: ${formatPrice(totalPrice)}</h3>
-                    
-                    <h3 style="margin-top: 30px;">APPROVAL STATUS</h3>
-                    <p><strong>Status:</strong> ${buyer.approval_status}</p>
-                    <p><strong>Notes:</strong> ${buyer.approval_notes || 'N/A'}</p>
-                    <p><strong>Approval Date:</strong> ${buyer.approval_date || 'N/A'}</p>
-                    
-                    <div style="margin-top: 50px; padding-top: 20px; border-top: 2px solid #333;">
-                        <p style="margin-bottom: 50px;">Buyer Signature: _______________________________</p>
-                        <p>Date: _______________________________</p>
-                    </div>
-                    
-                    <p style="text-align: center; color: #999; font-size: 11px; margin-top: 30px;">This contract is generated electronically. All information must be accurate.</p>
-                </div>
-            `;
-
-            document.getElementById('contractPreview').innerHTML = contractHtml;
-            document.getElementById('pdfPreview').style.display = 'block';
-            
-            // Store for PDF download
-            window.currentBuyerForPdf = buyerId;
-        }
-
-        function downloadPDF() {
-            const buyerId = window.currentBuyerForPdf;
-            const buyer = appData.buyers.find(b => b.buyer_id === buyerId);
-            
-            // Simple PDF download - using print to PDF
-            const printWindow = window.open('', '', 'height=600,width=800');
-            printWindow.document.write(document.getElementById('contractPreview').innerHTML);
-            printWindow.document.close();
-            printWindow.print();
-            
-            showToast(`PDF contract for ${buyer.name} ready to save`, 'success');
-        }
-
-        function closePdfPreview() {
-            document.getElementById('pdfPreview').style.display = 'none';
-            document.getElementById('pdfSearchResults').innerHTML = '';
-            document.getElementById('pdfSearchInput').value = '';
-        }
-
-        // ===== EXCEL IMPORT/EXPORT =====
-        function handleExcelUpload(event) {
-            currentExcelFile = event.target.files[0];
-            if (!currentExcelFile) return;
-            
-            showToast('File selected. Click "Import Data" to load.', 'success');
-        }
-
-        async function importExcel() {
-            if (!currentExcelFile) {
-                showToast('Please select an Excel file first', 'error');
-                return;
-            }
-
-            // Wait for XLSX to be available
-            let attempts = 0;
-            while (typeof XLSX === 'undefined' && attempts < 10) {
-                await new Promise(resolve => setTimeout(resolve, 200));
-                attempts++;
-            }
-
-            // Check if XLSX is now available
-            if (typeof XLSX === 'undefined') {
-                showToast('Excel library failed to load. Please refresh the page and try again.', 'error');
-                console.error('XLSX library not available after multiple attempts');
-                return;
-            }
-
-            try {
-                const ArrayBuffer = await currentExcelFile.arrayBuffer();
-                const workbook = XLSX.read(new Uint8Array(ArrayBuffer), { type: 'array', defval: '' });
-                
-                console.log('Available sheets:', workbook.SheetNames);
-                
-                // Load Apartments
-                if (workbook.SheetNames.includes('Apartments')) {
-                    const apartmentsSheet = workbook.Sheets['Apartments'];
-                    const apartmentsData = XLSX.utils.sheet_to_json(apartmentsSheet);
-                    appData.apartments = apartmentsData.filter(row => row.apartment_number);
-                    console.log('Apartments loaded:', appData.apartments.length);
-                }
-
-                // Load Styling Options
-                if (workbook.SheetNames.includes('Styling_Options')) {
-                    const stylingSheet = workbook.Sheets['Styling_Options'];
-                    const stylingData = XLSX.utils.sheet_to_json(stylingSheet);
-                    appData.stylingOptions = stylingData.filter(row => row.option_category);
-                    console.log('Styling options loaded:', appData.stylingOptions.length);
-                }
-
-                // Load Buyers
-                if (workbook.SheetNames.includes('Buyers')) {
-                    const buyersSheet = workbook.Sheets['Buyers'];
-                    const buyersData = XLSX.utils.sheet_to_json(buyersSheet);
-                    appData.buyers = buyersData.filter(row => row.buyer_id);
-                    console.log('Buyers loaded:', appData.buyers.length);
-                }
-
-                // Load Buyer Selections
-                if (workbook.SheetNames.includes('Buyer_Selections')) {
-                    const selectionsSheet = workbook.Sheets['Buyer_Selections'];
-                    const selectionsData = XLSX.utils.sheet_to_json(selectionsSheet);
-                    appData.buyerSelections = selectionsData.filter(row => row.buyer_id);
-                    console.log('Selections loaded:', appData.buyerSelections.length);
-                }
-
-                // Validate data was loaded
-                if (appData.apartments.length === 0 && appData.buyers.length === 0) {
-                    throw new Error('No valid data found in Excel file. Check sheet names and headers.');
-                }
-
-                saveDataToStorage();
-                updateDataSummary();
-                showToast(`✅ Imported: ${appData.apartments.length} apartments, ${appData.buyers.length} buyers`, 'success');
-                document.getElementById('excelFile').value = '';
-                currentExcelFile = null;
-
-            } catch (e) {
-                console.error('Error importing Excel:', e);
-                showToast('Error: ' + e.message, 'error');
-            }
-        }
-
-        function exportToExcel() {
-            // Check if XLSX is available
-            if (typeof XLSX === 'undefined') {
-                showToast('Excel library not loaded yet. Please wait a moment and try again.', 'error');
-                return;
-            }
-
-            try {
-                const wb = XLSX.utils.book_new();
-                
-                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(appData.apartments), 'Apartments');
-                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(appData.stylingOptions), 'Styling_Options');
-                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(appData.buyers), 'Buyers');
-                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(appData.buyerSelections), 'Buyer_Selections');
-                
-                XLSX.writeFile(wb, `apartment_sales_${new Date().toISOString().split('T')[0]}.xlsx`);
-                showToast('Data exported to Excel', 'success');
-            } catch (e) {
-                console.error('Error exporting Excel:', e);
-                showToast('Error exporting data: ' + e.message, 'error');
-            }
-        }
-
-        function clearAllData() {
-            if (!confirm('⚠️ Are you sure? This will delete all local data. Make sure you have a backup!')) {
-                return;
-            }
-
-            appData = {
-                apartments: [],
-                buyers: [],
-                stylingOptions: [],
-                buyerSelections: [],
-                selectedBuyer: null
-            };
-
-            localStorage.clear();
-            updateDataSummary();
-            showToast('All data cleared', 'success');
-        }
-
-        // ===== UTILITY FUNCTIONS =====
-        function updateDataSummary() {
-            document.getElementById('apartmentCount').textContent = appData.apartments.length;
-            document.getElementById('buyerCount').textContent = appData.buyers.length;
-            document.getElementById('pendingCount').textContent = appData.buyers.filter(b => b.approval_status === 'Pending').length;
-            document.getElementById('approvedCount').textContent = appData.buyers.filter(b => b.approval_status === 'Approved').length;
-            document.getElementById('rejectedCount').textContent = appData.buyers.filter(b => b.approval_status === 'Rejected').length;
-            document.getElementById('signedCount').textContent = appData.buyers.filter(b => b.contract_signed === 'Yes' || b.contract_signed === true).length;
-        }
-
-        function updateOnlineStatus() {
-            const isOnline = navigator.onLine;
-            const statusEl = document.getElementById('onlineStatus');
-            const statusText = document.getElementById('statusText');
-
-            if (isOnline) {
-                statusEl.classList.remove('offline');
-                statusText.textContent = 'Online';
-            } else {
-                statusEl.classList.add('offline');
-                statusText.textContent = 'Offline (Data cached locally)';
-            }
-        }
-
-        function updateLastSync() {
-            document.getElementById('lastSync').textContent = new Date().toLocaleString();
-        }
-
-        function formatPrice(price) {
-            return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD'
-            }).format(price);
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-    </script>
-
-    <!-- XLSX Library - Working CDN with fallbacks -->
+    <!-- XLSX Library -->
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js" crossorigin="anonymous"></script>
     
     <script>
