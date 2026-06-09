@@ -163,7 +163,30 @@ const TRANSLATIONS = {
         lblBuyerSelect: "Buyer *",
         lblSelDate: "Selection date",
         lblNotes: "Notes",
-        btnAddSelection: "Add selection"
+        btnAddSelection: "Add selection",
+
+        lblDetailName: "Name:",
+        lblDetailId: "ID:",
+        lblDetailEmail: "Email:",
+        lblDetailPhone: "Phone:",
+        lblDetailSigned: "Signed Contract:",
+        lblDetailUnit: "Unit:",
+        lblDetailType: "Type:",
+        lblDetailBedsCount: "{count} Bedroom",
+        lblDetailBasePrice: "Base Price:",
+        lblDetailParking: "Parking Spots:",
+        lblDetailAvailable: "Available:",
+        lblDetailAptNotFound: "Apartment {num} not found in inventory. Check excel file.",
+        lblDetailNoStyling: "No styling options catalog loaded.",
+        lblDetailStandard: "(Standard)",
+        lblDetailStdIncluded: "Standard / Included",
+        lblDetailStdDesc: "Default builder finishes",
+        lblDetailSelNote: "Selection note for {cat}:",
+        lblDetailNotePlaceholder: "Timeline or delivery note...",
+        lblDetailBaseUnitPrice: "Base Unit Price:",
+        lblDetailTotalUpcharges: "Total Styling Upcharges:",
+        lblDetailTotalPrice: "Total Price:",
+        syncInfoText: "💾 Data will sync to Excel when online"
     },
     ro: {
         appHeaderTitle: "Manager Vânzări Apartamente",
@@ -302,7 +325,30 @@ const TRANSLATIONS = {
         lblBuyerSelect: "Cumpărător *",
         lblSelDate: "Dată selecție",
         lblNotes: "Note",
-        btnAddSelection: "Adaugă selecție"
+        btnAddSelection: "Adaugă selecție",
+
+        lblDetailName: "Nume:",
+        lblDetailId: "ID:",
+        lblDetailEmail: "Email:",
+        lblDetailPhone: "Telefon:",
+        lblDetailSigned: "Contract Semnat:",
+        lblDetailUnit: "Unitate:",
+        lblDetailType: "Tip:",
+        lblDetailBedsCount: "{count} Camere",
+        lblDetailBasePrice: "Preț de Bază:",
+        lblDetailParking: "Locuri Parcare:",
+        lblDetailAvailable: "Disponibil:",
+        lblDetailAptNotFound: "Apartamentul {num} nu a fost găsit în inventar. Verificați fișierul Excel.",
+        lblDetailNoStyling: "Nu a fost încărcat catalogul de opțiuni.",
+        lblDetailStandard: "(Standard)",
+        lblDetailStdIncluded: "Standard / Inclus",
+        lblDetailStdDesc: "Finisaje standard incluse",
+        lblDetailSelNote: "Notă selecție pentru {cat}:",
+        lblDetailNotePlaceholder: "Notă livrare sau termen...",
+        lblDetailBaseUnitPrice: "Preț de Bază Unitate:",
+        lblDetailTotalUpcharges: "Total Costuri Stil:",
+        lblDetailTotalPrice: "Preț Total:",
+        syncInfoText: "💾 Datele se vor salva în Excel când ești online"
     }
 };
 
@@ -349,11 +395,17 @@ function translateUI() {
     const approvalNotes = document.getElementById('approvalNotes');
     if (approvalNotes) approvalNotes.placeholder = getTranslation('lblDecisionNotes');
 
+    // Translate sync info
+    const syncInfo = document.getElementById('syncInfo');
+    if (syncInfo) syncInfo.innerHTML = getTranslation('syncInfoText');
+
     // Update connection status
     updateOnlineStatus();
 
-    // Check empty messages if no buyer is selected
-    if (!appData.selectedBuyer) {
+    // Check empty messages if no buyer is selected, or redraw form details in selected language
+    if (appData.selectedBuyer) {
+        displayBuyerApprovalForm();
+    } else {
         ['buyerInfo', 'apartmentInfo'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.innerHTML = `<p style="color: var(--text-muted);">${getTranslation('msgSelectBuyerApproval')}</p>`;
@@ -711,23 +763,28 @@ function displayBuyerApprovalForm() {
 
     const apartment = appData.apartments.find(a => a.apartment_number === buyer.apartment_number);
 
+    // Translate Yes/No values if current language is Romanian
+    const signedValue = buyer.contract_signed === 'Yes' && currentLang === 'ro' ? 'Da' : (buyer.contract_signed === 'No' && currentLang === 'ro' ? 'Nu' : buyer.contract_signed);
+
     document.getElementById('buyerInfo').innerHTML = `
-        <div class="detail-row"><span>Name:</span><span>${escapeHtml(buyer.name)}</span></div>
-        <div class="detail-row"><span>ID:</span><span>${escapeHtml(buyer.buyer_id)}</span></div>
-        <div class="detail-row"><span>Email:</span><span>${escapeHtml(buyer.email)}</span></div>
-        <div class="detail-row"><span>Phone:</span><span>${escapeHtml(buyer.phone)}</span></div>
-        <div class="detail-row"><span>Signed Contract:</span><span>${escapeHtml(buyer.contract_signed)}</span></div>`;
+        <div class="detail-row"><span>${getTranslation('lblDetailName')}</span><span>${escapeHtml(buyer.name)}</span></div>
+        <div class="detail-row"><span>${getTranslation('lblDetailId')}</span><span>${escapeHtml(buyer.buyer_id)}</span></div>
+        <div class="detail-row"><span>${getTranslation('lblDetailEmail')}</span><span>${escapeHtml(buyer.email)}</span></div>
+        <div class="detail-row"><span>${getTranslation('lblDetailPhone')}</span><span>${escapeHtml(buyer.phone)}</span></div>
+        <div class="detail-row"><span>${getTranslation('lblDetailSigned')}</span><span>${escapeHtml(signedValue)}</span></div>`;
 
     if (apartment) {
+        const availableValue = apartment.available === 'Yes' && currentLang === 'ro' ? 'Da' : (apartment.available === 'No' && currentLang === 'ro' ? 'Nu' : apartment.available);
+        const bedsText = getTranslation('lblDetailBedsCount', { count: apartment.bedroom_type });
         document.getElementById('apartmentInfo').innerHTML = `
-            <div class="detail-row"><span>Unit:</span><span>${escapeHtml(apartment.apartment_number)}</span></div>
-            <div class="detail-row"><span>Type:</span><span>${escapeHtml(apartment.bedroom_type)} Bedroom</span></div>
-            <div class="detail-row"><span>Base Price:</span><span>${formatPrice(apartment.base_price)}</span></div>
-            <div class="detail-row"><span>Parking Spots:</span><span>${escapeHtml(apartment.parking_spots)}</span></div>
-            <div class="detail-row"><span>Available:</span><span>${escapeHtml(apartment.available)}</span></div>`;
+            <div class="detail-row"><span>${getTranslation('lblDetailUnit')}</span><span>${escapeHtml(apartment.apartment_number)}</span></div>
+            <div class="detail-row"><span>${getTranslation('lblDetailType')}</span><span>${escapeHtml(bedsText)}</span></div>
+            <div class="detail-row"><span>${getTranslation('lblDetailBasePrice')}</span><span>${formatPrice(apartment.base_price)}</span></div>
+            <div class="detail-row"><span>${getTranslation('lblDetailParking')}</span><span>${escapeHtml(apartment.parking_spots)}</span></div>
+            <div class="detail-row"><span>${getTranslation('lblDetailAvailable')}</span><span>${escapeHtml(availableValue)}</span></div>`;
     } else {
         document.getElementById('apartmentInfo').innerHTML =
-            `<p style="color:hsl(var(--danger));font-size:13px;font-weight:600;">Apartment ${escapeHtml(buyer.apartment_number)} not found in inventory. Check excel file.</p>`;
+            `<p style="color:hsl(var(--danger));font-size:13px;font-weight:600;">${getTranslation('lblDetailAptNotFound', { num: buyer.apartment_number })}</p>`;
     }
 
     // Render interactive styling selector
@@ -742,7 +799,7 @@ function displayBuyerApprovalForm() {
 function renderInteractiveOptionsSelector(buyer, apartment) {
     const optionsReviewContainer = document.getElementById('optionsReview');
     if (!appData.stylingOptions.length) {
-        optionsReviewContainer.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">No styling options catalog loaded.</p>';
+        optionsReviewContainer.innerHTML = `<p style="color:var(--text-muted);font-size:13px;">${getTranslation('lblDetailNoStyling')}</p>`;
         return;
     }
 
@@ -757,12 +814,13 @@ function renderInteractiveOptionsSelector(buyer, apartment) {
         const choices = choicesForCategory(cat);
         const isCollapsedKey = `opt_collapsed_${cat}`;
         const isCollapsed = localStorage.getItem(isCollapsedKey) === 'true';
+        const standardLabel = getTranslation('lblDetailStandard');
 
         html += `
             <div class="option-accordion-item">
                 <div class="option-cat-header ${isCollapsed ? 'collapsed' : ''}" onclick="toggleOptionCategoryAccordion('${escapeHtml(cat)}')">
                     <span>${escapeHtml(cat)}</span>
-                    <span style="font-size: 12px; opacity:0.8; font-weight:normal;">${activeSel ? activeSel.option_choice + ' (+' + formatPrice(activeSel.upcharge) + ')' : '(Standard)'}</span>
+                    <span style="font-size: 12px; opacity:0.8; font-weight:normal;">${activeSel ? activeSel.option_choice + ' (+' + formatPrice(activeSel.upcharge) + ')' : standardLabel}</span>
                 </div>
                 <div class="option-choices-list ${isCollapsed ? 'collapsed' : ''}" id="cat_list_${escapeHtml(cat)}">
                     <!-- Standard Option -->
@@ -770,10 +828,10 @@ function renderInteractiveOptionsSelector(buyer, apartment) {
                         <input type="radio" name="opt_choice_${index}" class="choice-radio-input" ${!activeSel ? 'checked' : ''}>
                         <div class="choice-info">
                             <div class="choice-title-price">
-                                <span>Standard / Included</span>
+                                <span>${getTranslation('lblDetailStdIncluded')}</span>
                                 <span class="choice-price">$0.00</span>
                             </div>
-                            <div class="choice-desc">Default builder finishes</div>
+                            <div class="choice-desc">${getTranslation('lblDetailStdDesc')}</div>
                         </div>
                     </div>
         `;
@@ -798,9 +856,9 @@ function renderInteractiveOptionsSelector(buyer, apartment) {
         if (activeSel) {
             html += `
                 <div class="option-notes-box">
-                    <label style="font-size:11px;font-weight:600;color:var(--text-secondary);">Selection note for ${escapeHtml(cat)}:</label>
+                    <label style="font-size:11px;font-weight:600;color:var(--text-secondary);">${getTranslation('lblDetailSelNote', { cat: cat })}</label>
                     <input type="text" id="note_input_${escapeHtml(cat)}" value="${escapeHtml(activeSel.option_notes)}" 
-                        placeholder="Timeline or delivery note..." style="padding: 6px 10px; margin-top: 4px; font-size:12px;" 
+                        placeholder="${getTranslation('lblDetailNotePlaceholder')}" style="padding: 6px 10px; margin-top: 4px; font-size:12px;" 
                         onchange="updateSelectionNote('${escapeHtml(buyer.buyer_id)}', '${escapeHtml(cat)}', this.value)">
                 </div>
             `;
@@ -819,9 +877,9 @@ function renderInteractiveOptionsSelector(buyer, apartment) {
 
     html += `
         <div class="price-summary-box">
-            <div class="sub-total">Base Unit Price: ${formatPrice(basePrice)}</div>
-            <div class="sub-total">Total Styling Upcharges: +${formatPrice(totalUpcharge)}</div>
-            <div class="grand-total">Total Price: ${formatPrice(grandTotal)}</div>
+            <div class="sub-total">${getTranslation('lblDetailBaseUnitPrice')} ${formatPrice(basePrice)}</div>
+            <div class="sub-total">${getTranslation('lblDetailTotalUpcharges')} +${formatPrice(totalUpcharge)}</div>
+            <div class="grand-total">${getTranslation('lblDetailTotalPrice')} ${formatPrice(grandTotal)}</div>
         </div>
     `;
 
@@ -966,7 +1024,7 @@ function buildContractHtml(buyer) {
         <p><strong>${currentLang === 'ro' ? 'Dormitoare' : 'Bedrooms'}:</strong> ${escapeHtml(apartment.bedroom_type)}</p>
         <p><strong>${currentLang === 'ro' ? 'Locuri de Parcare' : 'Parking Spots'}:</strong> ${escapeHtml(apartment.parking_spots)}</p>
         <p><strong>${currentLang === 'ro' ? 'Preț de Bază' : 'Base Price'}:</strong> ${formatPrice(apartment.base_price)}</p>
-    ` : `<p><em>Apartment ${escapeHtml(buyer.apartment_number)} — details not in inventory</em></p>`;
+    ` : `<p><em>${currentLang === 'ro' ? `Apartamentul ${escapeHtml(buyer.apartment_number)} — detaliile nu există în inventar` : `Apartment ${escapeHtml(buyer.apartment_number)} — details not in inventory`}</em></p>`;
 
     const titleContract = currentLang === 'ro' ? 'PROMISIUNE DE VÂNZARE-CUMPĂRARE' : 'APARTMENT PURCHASE AGREEMENT';
     const totalLabel = currentLang === 'ro' ? 'Preț Total Tranzacție' : 'Total Contract Value';
@@ -992,8 +1050,8 @@ function buildContractHtml(buyer) {
             <p style="text-align: center; color: #666; font-size: 11px;">Generated ${escapeHtml(new Date().toLocaleString())}</p>
             
             <h3 style="margin-top: 20px;">${currentLang === 'ro' ? 'Cumpărător' : 'Buyer'}</h3>
-            <p><strong>Name:</strong> ${escapeHtml(buyer.name)} &nbsp;|&nbsp; <strong>ID:</strong> ${escapeHtml(buyer.buyer_id)}</p>
-            <p><strong>Email:</strong> ${escapeHtml(buyer.email)} &nbsp;|&nbsp; <strong>Phone:</strong> ${escapeHtml(buyer.phone)}</p>
+            <p><strong>${currentLang === 'ro' ? 'Nume' : 'Name'}:</strong> ${escapeHtml(buyer.name)} &nbsp;|&nbsp; <strong>ID:</strong> ${escapeHtml(buyer.buyer_id)}</p>
+            <p><strong>Email:</strong> ${escapeHtml(buyer.email)} &nbsp;|&nbsp; <strong>${currentLang === 'ro' ? 'Telefon' : 'Phone'}:</strong> ${escapeHtml(buyer.phone)}</p>
             
             <h3 style="margin-top: 20px;">${currentLang === 'ro' ? 'Unitate Locativă' : 'Unit Details'}</h3>
             ${aptBlock}
@@ -1025,6 +1083,24 @@ function previewPdf(buyerId) {
     
     document.getElementById('contractPreview').innerHTML = buildContractHtml(buyer);
     document.getElementById('pdfPreview').style.display = 'block';
+    
+    // Set internal canvas coordinate resolution to match visual offset width/height to avoid coordinate distortion
+    setTimeout(() => {
+        if (signatureCanvas) {
+            const rect = signatureCanvas.getBoundingClientRect();
+            signatureCanvas.width = rect.width;
+            signatureCanvas.height = rect.height;
+            
+            // Re-apply stroke settings as they get reset when canvas dimensions change
+            signatureCtx.strokeStyle = '#222';
+            signatureCtx.lineWidth = 2.5;
+            signatureCtx.lineJoin = 'round';
+            signatureCtx.lineCap = 'round';
+            
+            signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+        }
+    }, 50);
+
     document.getElementById('pdfPreview').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
