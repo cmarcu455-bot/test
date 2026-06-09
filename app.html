@@ -1,729 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#366092">
+    <meta name="theme-color" content="#4f46e5">
     <meta name="description" content="Apartment Sales Management System">
     <title>Apartment Sales Manager</title>
     <link rel="manifest" href="manifest.json">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #366092;
-            --primary-light: #4a7ab8;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --pending: #17a2b8;
-            --light: #f8f9fa;
-            --dark: #333;
-            --border: #ddd;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background-color: #f5f5f5;
-            color: var(--dark);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 10px;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .header-status {
-            font-size: 12px;
-            opacity: 0.9;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .online-status {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #28a745;
-        }
-
-        .online-status.offline {
-            background-color: #dc3545;
-        }
-
-        nav {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        nav button {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        nav button.active {
-            background: white;
-            color: var(--primary);
-        }
-
-        nav button:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .main-content {
-            padding: 20px 0;
-            min-height: calc(100vh - 150px);
-        }
-
-        .section {
-            display: none;
-            background: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .search-box input {
-            flex: 1;
-            min-width: 200px;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 5px rgba(54, 96, 146, 0.2);
-        }
-
-        button {
-            padding: 10px 20px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-        button:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(54, 96, 146, 0.3);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button.secondary {
-            background: #6c757d;
-        }
-
-        button.secondary:hover {
-            background: #5a6268;
-        }
-
-        button.success {
-            background: var(--success);
-        }
-
-        button.success:hover {
-            background: #218838;
-        }
-
-        button.danger {
-            background: var(--danger);
-        }
-
-        button.danger:hover {
-            background: #c82333;
-        }
-
-        button.warning {
-            background: var(--warning);
-            color: var(--dark);
-        }
-
-        button.warning:hover {
-            background: #e0a800;
-        }
-
-        .buyer-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-        }
-
-        .buyer-card {
-            background: white;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .buyer-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(54, 96, 146, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .buyer-card.selected {
-            border-color: var(--primary);
-            background: rgba(54, 96, 146, 0.05);
-        }
-
-        .buyer-card h3 {
-            margin-bottom: 8px;
-            color: var(--primary);
-        }
-
-        .buyer-card p {
-            margin: 5px 0;
-            font-size: 13px;
-            color: #666;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 8px;
-        }
-
-        .status-badge.pending {
-            background: var(--pending);
-            color: white;
-        }
-
-        .status-badge.approved {
-            background: var(--success);
-            color: white;
-        }
-
-        .status-badge.rejected {
-            background: var(--danger);
-            color: white;
-        }
-
-        .form-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .form-section h3 {
-            margin-bottom: 15px;
-            color: var(--primary);
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--dark);
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid var(--border);
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 5px rgba(54, 96, 146, 0.2);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .option-category {
-            background: white;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 4px;
-        }
-
-        .option-category h4 {
-            margin-bottom: 10px;
-            color: var(--primary);
-            font-size: 14px;
-        }
-
-        .option-choice {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 0;
-            font-size: 13px;
-        }
-
-        .option-choice input[type="radio"] {
-            cursor: pointer;
-            width: auto;
-        }
-
-        .option-choice label {
-            margin: 0;
-            cursor: pointer;
-            flex: 1;
-        }
-
-        .option-price {
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 12px;
-        }
-
-        .summary {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .summary-row strong {
-            color: var(--primary);
-        }
-
-        .total-price {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--success);
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 2px solid var(--border);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .action-buttons button {
-            flex: 1;
-            min-width: 120px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-content h2 {
-            margin-bottom: 20px;
-            color: var(--primary);
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: flex-end;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        .table thead {
-            background: var(--primary);
-            color: white;
-        }
-
-        .table th,
-        .table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .table tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .no-results p {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
-        footer {
-            background: var(--light);
-            padding: 20px;
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-            margin-top: 40px;
-            border-top: 1px solid var(--border);
-        }
-
-        .sync-status {
-            background: #e8f4f8;
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-size: 13px;
-            color: #0c5460;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--dark);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 2000;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .toast.success {
-            background: var(--success);
-        }
-
-        .toast.error {
-            background: var(--danger);
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 20px;
-            }
-
-            nav {
-                gap: 5px;
-            }
-
-            nav button {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-
-            .section {
-                padding: 15px;
-            }
-
-            .buyer-list {
-                grid-template-columns: 1fr;
-            }
-
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .action-buttons button {
-                min-width: auto;
-            }
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--primary);
-        }
-
-        .loading::after {
-            content: '';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .stats-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-chip {
-            background: var(--light);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px 14px;
-            font-size: 13px;
-        }
-
-        .stat-chip strong {
-            color: var(--primary);
-        }
-
-        .filter-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-            align-items: center;
-        }
-
-        .filter-row select {
-            padding: 10px 12px;
-            border: 2px solid var(--border);
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 32px 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 2px dashed var(--border);
-            color: #666;
-        }
-
-        .empty-state a {
-            color: var(--primary);
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .import-hint {
-            font-size: 13px;
-            color: #666;
-            margin-top: 10px;
-            padding: 10px;
-            background: #fff8e6;
-            border-radius: 4px;
-            border-left: 4px solid var(--warning);
-        }
-
-        .data-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 12px;
-        }
-
-        .data-tabs button {
-            padding: 8px 14px;
-            background: var(--light);
-            color: var(--dark);
-            border: 2px solid var(--border);
-        }
-
-        .data-tabs button.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .data-tabs button:hover:not(.active) {
-            background: #e9ecef;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-            margin-bottom: 20px;
-        }
-
-        .table .btn-sm {
-            padding: 4px 10px;
-            font-size: 12px;
-            margin-right: 4px;
-        }
-
-        .edit-form-card {
-            background: #f8f9fa;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 10px;
-        }
-
-        .edit-form-card h4 {
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px;
-        }
-
-        .edit-hint {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 16px;
-        }
-
-        @media print {
-            header, nav, footer, .action-buttons, .modal { display: none !important; }
-            .section { display: block !important; box-shadow: none; }
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="app.css">
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>🏢 Apartment Sales Manager</h1>
-            <div class="header-status">
-                <span class="online-status" id="onlineStatus"></span>
-                <span id="statusText">Online</span>
+            <div class="header-top">
+                <h1>🏢 <span id="appHeaderTitle">Apartment Sales Manager</span></h1>
+                <div class="header-controls">
+                    <div class="header-status">
+                        <span class="online-status" id="onlineStatus"></span>
+                        <span id="statusText">Online</span>
+                    </div>
+                    <!-- Language Selection Pill Toggle -->
+                    <div class="pill-toggle">
+                        <button type="button" class="pill-btn" id="btnLangEn" onclick="setLanguage('en')">EN</button>
+                        <button type="button" class="pill-btn" id="btnLangRo" onclick="setLanguage('ro')">RO</button>
+                    </div>
+                    <!-- Theme Selection Pill Toggle -->
+                    <div class="pill-toggle">
+                        <button type="button" class="pill-btn" id="btnThemeLight" onclick="setTheme('light')">☀️</button>
+                        <button type="button" class="pill-btn" id="btnThemeDark" onclick="setTheme('dark')">🌙</button>
+                    </div>
+                </div>
             </div>
-            <nav>
-                <button class="nav-btn active" data-section="search">🔍 Search Buyer</button>
-                <button class="nav-btn" data-section="approve">✅ Approve/Review</button>
-                <button class="nav-btn" data-section="pdf">📄 Generate PDF</button>
-                <button class="nav-btn" data-section="edit">✏️ Edit Data</button>
-                <button class="nav-btn" data-section="data">📊 Import/Export</button>
+            <nav id="navTabs">
+                <button class="nav-btn active" data-section="dashboard" id="tabDashboard">📊 Dashboard</button>
+                <button class="nav-btn" data-section="search" id="tabSearch">🔍 Search Buyer</button>
+                <button class="nav-btn" data-section="approve" id="tabApprove">✅ Approve/Review</button>
+                <button class="nav-btn" data-section="pdf" id="tabPdf">📄 Generate PDF</button>
+                <button class="nav-btn" data-section="edit" id="tabEdit">✏️ Edit Data</button>
+                <button class="nav-btn" data-section="data" id="tabData">📤 Import/Export</button>
             </nav>
         </div>
     </header>
 
     <main class="main-content">
         <div class="container">
+            
+            <!-- DASHBOARD SECTION -->
+            <section id="dashboard" class="section active">
+                <div class="section-title-row">
+                    <h2 id="dashTitle">Sales Dashboard</h2>
+                    <p id="dashSubtitle">Overview of apartments, buyer pipeline, and sales value</p>
+                </div>
+                
+                <!-- KPI Statistics Grid -->
+                <div class="kpi-grid">
+                    <div class="glass-panel kpi-card">
+                        <div class="kpi-title" id="kpiAptsTitle">Apartments Sold</div>
+                        <div class="kpi-value" id="dashTotalApts">0 / 0</div>
+                        <div class="kpi-detail" id="kpiAptsDetail">0% occupancy rate</div>
+                        <div class="mini-progress">
+                            <div class="mini-progress-bar" id="dashAptsProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel kpi-card">
+                        <div class="kpi-title" id="kpiBuyersTitle">Active Buyers</div>
+                        <div class="kpi-value" id="dashTotalBuyers">0</div>
+                        <div class="kpi-detail" id="kpiBuyersDetail">0 pending approval</div>
+                    </div>
+                    <div class="glass-panel kpi-card">
+                        <div class="kpi-title" id="kpiContractsTitle">Signed Contracts</div>
+                        <div class="kpi-value" id="dashSignedContracts">0</div>
+                        <div class="kpi-detail" id="kpiContractsDetail">0% of approved buyers</div>
+                        <div class="mini-progress">
+                            <div class="mini-progress-bar" id="dashSignedProgress" style="width: 0%; background-color: hsl(var(--success))"></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel kpi-card">
+                        <div class="kpi-title" id="kpiRevenueTitle">Total Sales Revenue</div>
+                        <div class="kpi-value" id="dashPotentialRevenue">$0.00</div>
+                        <div class="kpi-detail" id="kpiRevenueDetail">Approved: <strong id="dashApprovedRevenue" style="color: hsl(var(--success))">$0.00</strong></div>
+                    </div>
+                </div>
+
+                <!-- Charts and Actions Panel -->
+                <div class="analytics-grid">
+                    <div class="glass-panel analytics-card">
+                        <h3 id="chartBedsTitle">Apartments by Bedroom Type</h3>
+                        <div class="chart-container" id="chartBeds">
+                            <!-- SVG Bar Chart inserted dynamically -->
+                        </div>
+                    </div>
+                    <div class="glass-panel analytics-card">
+                        <h3 id="chartStatusTitle">Buyers pipeline</h3>
+                        <div class="chart-container" id="chartStatus">
+                            <!-- SVG Donut Chart inserted dynamically -->
+                        </div>
+                    </div>
+                    <div class="glass-panel shortcuts-card">
+                        <h3 id="shortcutsTitle">Quick Actions</h3>
+                        <div class="shortcuts-grid">
+                            <button type="button" class="shortcut-btn" onclick="goToTab('data')">
+                                <span>📥</span>
+                                <strong id="actionImport">Import Excel</strong>
+                            </button>
+                            <button type="button" class="shortcut-btn" onclick="goToTab('search')">
+                                <span>🔍</span>
+                                <strong id="actionSearch">Search Buyers</strong>
+                            </button>
+                            <button type="button" class="shortcut-btn" onclick="goToTab('edit', 'buyers')">
+                                <span>👤</span>
+                                <strong id="actionAddBuyer">Add New Buyer</strong>
+                            </button>
+                            <button type="button" class="shortcut-btn" onclick="goToTab('data')">
+                                <span>📤</span>
+                                <strong id="actionExport">Export Data</strong>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- SEARCH SECTION -->
-            <section id="search" class="section active">
-                <h2>Search Buyer or Apartment</h2>
-                <div class="stats-bar" id="searchStats"></div>
+            <section id="search" class="section">
+                <div class="section-title-row">
+                    <h2 id="searchTitle">Search Buyer or Apartment</h2>
+                    <p id="searchSubtitle">Instantly look up profiles, selections, and status</p>
+                </div>
+                <div class="stats-bar" id="searchStats" style="margin-bottom: 20px;"></div>
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Search by buyer name or apartment number..." autocomplete="off">
                     <button type="button" id="searchBtn">Search</button>
@@ -731,12 +135,12 @@
                     <button type="button" class="secondary" id="browseAllBtn">Show all</button>
                 </div>
                 <div class="filter-row">
-                    <label for="statusFilter">Filter by status:</label>
+                    <label for="statusFilter" id="lblStatusFilter">Filter by status:</label>
                     <select id="statusFilter">
-                        <option value="">All statuses</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Rejected">Rejected</option>
+                        <option value="" id="optStatusAll">All statuses</option>
+                        <option value="Pending" id="optStatusPending">Pending</option>
+                        <option value="Approved" id="optStatusApproved">Approved</option>
+                        <option value="Rejected" id="optStatusRejected">Rejected</option>
                     </select>
                 </div>
                 <div id="searchResults" class="buyer-list"></div>
@@ -744,51 +148,59 @@
 
             <!-- APPROVAL SECTION -->
             <section id="approve" class="section">
-                <h2>Approve/Review Buyer</h2>
+                <div class="section-title-row">
+                    <h2 id="approveTitle">Approve / Review Selections</h2>
+                    <p id="approveSubtitle">Customize styling choices and record approval decisions</p>
+                </div>
+                
                 <div class="sync-status" style="display:none;" id="syncInfo">
                     💾 Data will sync to Excel when online
                 </div>
-                
-                <div class="form-section">
-                    <h3>Buyer Information</h3>
-                    <p style="font-size:13px;color:#666;margin-bottom:10px;">To change name, email, or apartment, use <strong>Edit Data → Buyers</strong>.</p>
-                    <div id="buyerInfo">
-                        <p style="color: #999;">Select a buyer from search first</p>
-                    </div>
-                </div>
 
-                <div class="form-section">
-                    <h3>Apartment Details</h3>
-                    <div id="apartmentInfo">
-                        <p style="color: #999;">Select a buyer from search first</p>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Selected Options & Pricing</h3>
-                    <div id="optionsReview">
-                        <p style="color: #999;">Select a buyer from search first</p>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Approval Decision</h3>
-                    <div id="approvalForm" style="display:none;">
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select id="approvalStatus">
-                                <option value="Pending">Pending</option>
-                                <option value="Approved">Approved</option>
-                                <option value="Rejected">Rejected</option>
-                            </select>
+                <!-- Two-Column Review Layout -->
+                <div class="review-grid">
+                    <!-- Column 1: Client & Inventory Summaries -->
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="glass-panel detail-card">
+                            <h3 id="panelBuyerTitle">Buyer Information</h3>
+                            <div id="buyerInfo">
+                                <p style="color: var(--text-muted);" id="msgSelectBuyerApproval">Select a buyer from search first</p>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Notes (Why approved/rejected)</label>
-                            <textarea id="approvalNotes" placeholder="Add your notes here..."></textarea>
+
+                        <div class="glass-panel detail-card">
+                            <h3 id="panelAptTitle">Apartment Details</h3>
+                            <div id="apartmentInfo">
+                                <p style="color: var(--text-muted);" id="msgSelectAptApproval">Select a buyer from search first</p>
+                            </div>
                         </div>
-                        <div class="action-buttons" id="approvalActionButtons">
-                            <button type="button" class="success" id="saveApprovalBtn">💾 Save Approval</button>
-                            <button type="button" class="secondary" id="cancelApprovalBtn">Cancel</button>
+                    </div>
+
+                    <!-- Column 2: Interactive Styling Choices & Approvals -->
+                    <div class="glass-panel detail-card">
+                        <h3 id="panelOptionsTitle">Selected Styling & Pricing</h3>
+                        <div id="optionsReview">
+                            <p style="color: var(--text-muted);" id="msgSelectOptionsApproval">Select a buyer from search first</p>
+                        </div>
+
+                        <div id="approvalForm" style="display:none; margin-top: 24px; border-top: 1px solid var(--card-border); padding-top: 20px;">
+                            <h3 id="panelDecisionTitle" style="font-size: 15px; margin-bottom: 12px; border-bottom: none; padding-bottom: 0;">Approval Decision</h3>
+                            <div class="form-group">
+                                <label id="lblDecisionStatus">Decision Status</label>
+                                <select id="approvalStatus">
+                                    <option value="Pending" id="formStatusPending">Pending</option>
+                                    <option value="Approved" id="formStatusApproved">Approved</option>
+                                    <option value="Rejected" id="formStatusRejected">Rejected</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label id="lblDecisionNotes">Decision Notes / Details</label>
+                                <textarea id="approvalNotes" placeholder="Add approval, rejection, or structural notes here..."></textarea>
+                            </div>
+                            <div class="action-buttons" id="approvalActionButtons">
+                                <button type="button" class="success" id="saveApprovalBtn">💾 Save Approval</button>
+                                <button type="button" class="secondary" id="cancelApprovalBtn">Cancel</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -796,11 +208,15 @@
 
             <!-- PDF SECTION -->
             <section id="pdf" class="section">
-                <h2>Generate PDF Contract</h2>
-                <div class="form-section">
-                    <h3>Select Buyer</h3>
+                <div class="section-title-row">
+                    <h2 id="pdfTitle">Generate Purchase Agreement</h2>
+                    <p id="pdfSubtitle">Create printable contract PDFs with digital signatures</p>
+                </div>
+                
+                <div class="glass-panel detail-card" style="margin-bottom: 24px;">
+                    <h3 id="pdfSelectBuyerTitle">Select Buyer</h3>
                     <div class="search-box">
-                        <input type="text" id="pdfSearchInput" placeholder="Search buyer..." autocomplete="off">
+                        <input type="text" id="pdfSearchInput" placeholder="Search buyer by name or apartment..." autocomplete="off">
                         <button type="button" id="pdfSearchBtn">Search</button>
                         <button type="button" class="secondary" id="pdfShowAllBtn">Show all</button>
                     </div>
@@ -808,12 +224,25 @@
                 </div>
 
                 <div id="pdfPreview" style="display:none;">
-                    <div class="form-section">
-                        <h3>Contract Preview</h3>
-                        <div id="contractPreview"></div>
-                        <div class="action-buttons" id="pdfActionButtons">
+                    <div class="glass-panel detail-card">
+                        <h3 id="pdfContractPreviewTitle">Agreement Preview</h3>
+                        <div class="contract-preview-container" id="contractPreview"></div>
+                        
+                        <!-- Client Signature Canvas -->
+                        <div class="signature-section">
+                            <h4 id="sigTitle" style="font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px;">Client Digital Signature</h4>
+                            <div class="signature-canvas-container">
+                                <canvas id="signatureCanvas" class="signature-canvas" width="500" height="150"></canvas>
+                            </div>
+                            <div class="signature-buttons">
+                                <button type="button" class="secondary" id="clearSignatureBtn">🧹 Clear</button>
+                                <button type="button" class="success" id="saveSignatureBtn">✓ Apply Signature</button>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons" id="pdfActionButtons" style="margin-top: 24px;">
                             <button type="button" class="success" id="downloadPdfBtn">📥 Print / Save PDF</button>
-                            <button type="button" class="secondary" id="closePdfBtn">Close</button>
+                            <button type="button" class="secondary" id="closePdfBtn">Close Preview</button>
                         </div>
                     </div>
                 </div>
@@ -821,31 +250,40 @@
 
             <!-- EDIT DATA SECTION -->
             <section id="edit" class="section">
-                <h2>Edit Data</h2>
-                <p class="edit-hint">Add or change apartments, buyers, options, and selections. Changes save on this device automatically — use <strong>Import/Export → Export Data</strong> to update your Excel file.</p>
+                <div class="section-title-row">
+                    <h2 id="editTitle">Edit Local Inventory</h2>
+                    <p id="editSubtitle">Add, remove, or modify items directly in browser storage</p>
+                </div>
                 <div class="data-tabs" id="editTabs">
-                    <button type="button" class="active" data-edit-tab="apartments">🏠 Apartments</button>
-                    <button type="button" data-edit-tab="buyers">👤 Buyers</button>
-                    <button type="button" data-edit-tab="options">🎨 Styling Options</button>
-                    <button type="button" data-edit-tab="selections">📋 Buyer Selections</button>
+                    <button type="button" class="active" data-edit-tab="apartments" id="tabEditApt">🏠 Apartments</button>
+                    <button type="button" data-edit-tab="buyers" id="tabEditBuyer">👤 Buyers</button>
+                    <button type="button" data-edit-tab="options" id="tabEditOptions">🎨 Styling Options</button>
+                    <button type="button" data-edit-tab="selections" id="tabEditSelections">📋 Buyer Selections</button>
                 </div>
                 <div id="editPanel"></div>
             </section>
 
             <!-- DATA MANAGEMENT SECTION -->
             <section id="data" class="section">
-                <h2>Import / Export</h2>
+                <div class="section-title-row">
+                    <h2 id="dataTitle">Data Import / Export</h2>
+                    <p id="dataSubtitle">Sync local changes back into apartment Excel sheets</p>
+                </div>
                 
-                <div class="form-section">
-                    <h3>Import/Export Excel</h3>
-                    <p style="margin-bottom: 15px; color: #666;">Upload your Excel file to load data, or edit in the app and <strong>Export</strong> to save back to Excel. Test file: <strong>Apartment_Sales_Test_Data.xlsx</strong>.</p>
-                    <div class="import-hint">Required sheets (exact names): Apartments, Styling_Options, Buyers, Buyer_Selections</div>
+                <div class="glass-panel detail-card" style="margin-bottom: 24px;">
+                    <h3 id="panelExcelTitle">Excel File Management</h3>
+                    <p style="margin-bottom: 15px; font-size: 13px; color: var(--text-secondary);" id="dataExcelDesc">
+                        Upload your Excel file to load data, or edit in the app and export back to Excel. Required sheets: Apartments, Styling_Options, Buyers, Buyer_Selections.
+                    </p>
+                    <div class="import-hint" id="dataExcelHint" style="background: rgba(245, 158, 11, 0.08); border-left: 4px solid hsl(var(--warning)); padding: 10px; border-radius: 4px; font-size: 12px; margin-bottom: 15px; color: var(--text-secondary);">
+                        Required sheets (exact case-sensitive names): Apartments, Styling_Options, Buyers, Buyer_Selections
+                    </div>
                     
                     <div class="form-group">
-                        <label>Upload Excel File (.xlsx)</label>
-                        <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
+                        <label id="lblExcelUpload">Upload Excel File (.xlsx)</label>
+                        <input type="file" id="excelFile" accept=".xlsx,.xls">
                     </div>
-                    <p id="excelFileName" style="font-size: 13px; color: #666; margin-bottom: 12px;"></p>
+                    <p id="excelFileName" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; font-weight: 500;"></p>
                     
                     <div class="action-buttons">
                         <button type="button" class="success" id="importExcelBtn">📤 Import Data</button>
@@ -854,31 +292,31 @@
                     </div>
                 </div>
 
-                <div class="form-section">
-                    <h3>Data Summary</h3>
+                <div class="glass-panel detail-card">
+                    <h3 id="panelSummaryTitle">Database Statistics Summary</h3>
                     <table class="table">
                         <tr>
-                            <td><strong>Total Apartments:</strong></td>
+                            <td><strong id="tblTotalApts">Total Apartments:</strong></td>
                             <td id="apartmentCount">0</td>
                         </tr>
                         <tr>
-                            <td><strong>Total Buyers:</strong></td>
+                            <td><strong id="tblTotalBuyers">Total Buyers:</strong></td>
                             <td id="buyerCount">0</td>
                         </tr>
                         <tr>
-                            <td><strong>Pending Approvals:</strong></td>
+                            <td><strong id="tblPendingApp">Pending Approvals:</strong></td>
                             <td id="pendingCount">0</td>
                         </tr>
                         <tr>
-                            <td><strong>Approved:</strong></td>
+                            <td><strong id="tblApprovedApp">Approved Sales:</strong></td>
                             <td id="approvedCount">0</td>
                         </tr>
                         <tr>
-                            <td><strong>Rejected:</strong></td>
+                            <td><strong id="tblRejectedApp">Rejected Sales:</strong></td>
                             <td id="rejectedCount">0</td>
                         </tr>
                         <tr>
-                            <td><strong>Contracts Signed:</strong></td>
+                            <td><strong id="tblSignedApp">Contracts Signed:</strong></td>
                             <td id="signedCount">0</td>
                         </tr>
                     </table>
@@ -888,17 +326,17 @@
     </main>
 
     <footer>
-        <p>🏢 Apartment Sales Manager | Works offline after first load | Version 1.3</p>
-        <p>Last updated: <span id="lastSync">Never</span></p>
+        <p>🏢 <span id="footAppName">Apartment Sales Manager</span> | <span id="footOfflineHint">Works offline after first load</span> | Version 2.0</p>
+        <p id="footLastSyncRow"><span id="lblLastUpdated">Last updated:</span> <span id="lastSync">Never</span></p>
     </footer>
 
-    <script src="app.js?v=1.3"></script>
+    <!-- Core App Logic -->
+    <script src="app.js?v=2.0"></script>
 
-    <!-- XLSX Library -->
+    <!-- XLSX Library - Working CDN with fallbacks -->
     <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js" crossorigin="anonymous"></script>
     
     <script>
-        // Verify XLSX loaded and provide fallback
         let xlsxReady = false;
         
         function checkXLSX() {
@@ -910,10 +348,8 @@
             return false;
         }
         
-        // Check immediately
         checkXLSX();
         
-        // If not loaded in 2 seconds, try alternative CDN
         setTimeout(() => {
             if (!checkXLSX()) {
                 console.log('XLSX not loaded, trying alternative CDN...');

@@ -1,176 +1,279 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4f46e5">
     <title>Apartment Sales Manager</title>
+    <link rel="stylesheet" href="index.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #366092 0%, #4a7ab8 100%);
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            min-height: 100vh;
+            padding: 24px;
+            background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, rgba(9, 13, 22, 1) 90%);
         }
         
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 600px;
-            padding: 50px;
+        .portal-container {
+            max-width: 540px;
+            width: 100%;
+            padding: 40px;
             text-align: center;
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background: rgba(148, 163, 184, 0.1);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+        }
+
+        .toggle-btn:hover {
+            background: rgba(148, 163, 184, 0.2);
         }
         
-        .logo {
-            font-size: 60px;
-            margin-bottom: 20px;
+        .logo-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            display: inline-block;
+            filter: drop-shadow(0 8px 16px rgba(99, 102, 241, 0.3));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
         
         h1 {
-            color: #366092;
-            margin-bottom: 10px;
             font-size: 32px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #f8fafc 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        :root[data-theme="light"] h1 {
+            background: linear-gradient(135deg, #0f172a 30%, #4f46e5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 15px;
         }
         
         .button-group {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
         }
-        
-        a {
-            display: inline-block;
-            padding: 15px 30px;
-            background: #366092;
-            color: white;
+
+        .button-group a {
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: 2px solid #366092;
+            width: 100%;
         }
         
-        a:hover {
-            background: white;
-            color: #366092;
-        }
-        
-        a.secondary {
-            background: white;
-            color: #366092;
-        }
-        
-        a.secondary:hover {
-            background: #f0f0f0;
-        }
-        
-        .features {
+        .features-box {
             text-align: left;
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 8px;
-            margin-top: 30px;
+            background: rgba(148, 163, 184, 0.05);
+            border: 1px solid var(--card-border);
+            padding: 24px;
+            border-radius: var(--radius-md);
+            margin-top: 24px;
         }
         
-        .features h3 {
-            color: #366092;
-            margin-bottom: 15px;
+        .features-box h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: hsl(var(--primary-light));
+            margin-bottom: 16px;
             text-align: center;
         }
+
+        :root[data-theme="light"] .features-box h3 {
+            color: hsl(var(--primary));
+        }
         
-        .features ul {
+        .features-box ul {
             list-style: none;
+            display: grid;
+            gap: 10px;
         }
         
-        .features li {
-            padding: 8px 0;
-            color: #333;
-            border-bottom: 1px solid #e0e0e0;
+        .features-box li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .features li:last-child {
-            border-bottom: none;
+        .features-box li:before {
+            content: "✓";
+            color: hsl(var(--success));
+            font-weight: 800;
         }
         
-        .features li:before {
-            content: "✓ ";
-            color: #28a745;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        
-        .info {
-            background: #e7f3ff;
-            border-left: 4px solid #366092;
-            padding: 15px;
-            margin-top: 20px;
+        .info-note {
+            background: rgba(6, 182, 212, 0.08);
+            border-left: 3px solid hsl(var(--info));
+            padding: 14px 18px;
+            margin-top: 24px;
             border-radius: 4px;
-            font-size: 14px;
-            color: #0c5460;
+            font-size: 12px;
+            color: var(--text-secondary);
             text-align: left;
+        }
+
+        .info-note code {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: hsl(var(--info));
         }
         
         @media (max-width: 600px) {
-            .container {
-                padding: 30px;
+            .portal-container {
+                padding: 30px 20px;
             }
             
             h1 {
-                font-size: 24px;
-            }
-            
-            .logo {
-                font-size: 45px;
+                font-size: 26px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">🏢</div>
-        <h1>Apartment Sales Manager</h1>
-        <p class="subtitle">Manage, approve, and generate contracts for apartment sales</p>
+    <div class="portal-container glass-panel">
+        <div class="portal-header">
+            <button class="toggle-btn" id="langToggle" onclick="toggleLang()">RO</button>
+            <button class="toggle-btn" id="themeToggle" onclick="toggleTheme()">☀️</button>
+        </div>
+
+        <div class="logo-icon">🏢</div>
+        <h1 id="title">Apartment Sales Manager</h1>
+        <p class="subtitle" id="subtitle">Manage, approve, and generate contracts for apartment sales</p>
         
         <div class="button-group">
-            <a href="app.html">🚀 Start Application</a>
-            <a href="SETUP_GUIDE.md" class="secondary">📖 Read Setup Guide</a>
-            <a href="PROJECT_SUMMARY.md" class="secondary">📋 Project Summary</a>
+            <a href="app.html"><button class="primary" style="width: 100%; padding: 14px;" id="btnStart">🚀 Start Application</button></a>
+            <a href="SETUP_GUIDE.md" style="margin-top: 4px;"><button class="secondary" style="width: 100%; padding: 12px;" id="btnSetup">📖 Read Setup Guide</button></a>
+            <a href="PROJECT_SUMMARY.md"><button class="secondary" style="width: 100%; padding: 12px;" id="btnSummary">📋 Project Summary</button></a>
         </div>
         
-        <div class="features">
-            <h3>Key Features</h3>
-            <ul>
-                <li>Search buyers by name or apartment number</li>
-                <li>Approve/Reject applications with notes</li>
-                <li>Generate PDF contracts automatically</li>
-                <li>Works 100% offline on tablets</li>
-                <li>Import/Export Excel files</li>
-                <li>Track approval status</li>
-                <li>Professional PDF generation</li>
-                <li>Mobile-optimized interface</li>
+        <div class="features-box">
+            <h3 id="featuresTitle">Key Features</h3>
+            <ul id="featuresList">
+                <!-- Features inserted dynamically -->
             </ul>
         </div>
         
-        <div class="info">
+        <div class="info-note" id="infoNote">
             💡 <strong>Local:</strong> <code>npm run serve</code> then open the URL shown.<br>
             <strong>GitHub Pages:</strong> after deploy, use <code>https://YOUR-USERNAME.github.io/test/app.html</code> — see <strong>DEPLOY.md</strong>.
         </div>
     </div>
+
+    <script>
+        const translations = {
+            en: {
+                title: "Apartment Sales Manager",
+                subtitle: "Manage, approve, and generate contracts for apartment sales",
+                start: "🚀 Start Application",
+                setup: "📖 Read Setup Guide",
+                summary: "📋 Project Summary",
+                features: "Key Features",
+                info: "💡 <strong>Local:</strong> <code>npm run serve</code> then open the URL shown.<br><strong>GitHub Pages:</strong> after deploy, use <code>https://YOUR-USERNAME.github.io/test/app.html</code> — see <strong>DEPLOY.md</strong>.",
+                list: [
+                    "Search buyers by name or apartment number",
+                    "Approve/Reject applications with notes",
+                    "Generate PDF contracts automatically",
+                    "Works 100% offline on tablets",
+                    "Import/Export Excel files",
+                    "Track approval status",
+                    "Professional PDF generation",
+                    "Mobile-optimized interface"
+                ]
+            },
+            ro: {
+                title: "Manager Vânzări Apartamente",
+                subtitle: "Administrează, aprobă și generează contracte pentru vânzările de apartamente",
+                start: "🚀 Pornește Aplicația",
+                setup: "📖 Ghid de Configurare",
+                summary: "📋 Rezumat Proiect",
+                features: "Funcționalități Cheie",
+                info: "💡 <strong>Local:</strong> <code>npm run serve</code> apoi deschideți URL-ul afișat.<br><strong>GitHub Pages:</strong> după deploy, accesați <code>https://YOUR-USERNAME.github.io/test/app.html</code> — vezi <strong>DEPLOY.md</strong>.",
+                list: [
+                    "Căutare cumpărători după nume sau număr apartament",
+                    "Aprobare/Respingere cereri cu note detaliate",
+                    "Generare contracte PDF în mod automat",
+                    "Funcționează 100% offline pe tablete",
+                    "Import/Export de fișiere Excel",
+                    "Urmărire status pentru aprobare",
+                    "Generare PDF aspect profesional",
+                    "Interfață optimizată complet pentru mobil"
+                ]
+            }
+        };
+
+        let currentLang = localStorage.getItem('appLanguage') || 'en';
+        let currentTheme = localStorage.getItem('appTheme') || 'dark';
+
+        function updateUI() {
+            const data = translations[currentLang];
+            document.getElementById('title').textContent = data.title;
+            document.getElementById('subtitle').textContent = data.subtitle;
+            document.getElementById('btnStart').textContent = data.start;
+            document.getElementById('btnSetup').textContent = data.setup;
+            document.getElementById('btnSummary').textContent = data.summary;
+            document.getElementById('featuresTitle').textContent = data.features;
+            document.getElementById('infoNote').innerHTML = data.info;
+            document.getElementById('langToggle').textContent = currentLang === 'en' ? 'RO' : 'EN';
+            
+            const listContainer = document.getElementById('featuresList');
+            listContainer.innerHTML = data.list.map(f => `<li>${f}</li>`).join('');
+            
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            document.getElementById('themeToggle').textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'en' ? 'ro' : 'en';
+            localStorage.setItem('appLanguage', currentLang);
+            updateUI();
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('appTheme', currentTheme);
+            updateUI();
+        }
+
+        // Initialize
+        updateUI();
+    </script>
 </body>
 </html>

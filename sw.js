@@ -1,6 +1,6 @@
-const CACHE_NAME = 'apartment-sales-v4';
+const CACHE_NAME = 'apartment-sales-v5';
 
-const STATIC_ASSETS = ['./index.html', './manifest.json'];
+const STATIC_ASSETS = ['./index.html', './manifest.json', './index.css', './app.css'];
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
